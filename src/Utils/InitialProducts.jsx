@@ -1,0 +1,17 @@
+export const initialProducts = [
+  { id: 1, name: 'Wireless Headphones Pro', category: 'Electronics', price: 129.99, stock: 45, sales: 234, image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300&h=300&fit=crop' },
+  { id: 2, name: 'Smart Watch Ultra', category: 'Electronics', price: 299.99, stock: 28, sales: 456, image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300&h=300&fit=crop' },
+  { id: 3, name: 'Running Shoes Elite', category: 'Footwear', price: 89.99, stock: 67, sales: 612, image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=300&h=300&fit=crop' },
+  { id: 4, name: 'Leather Backpack Premium', category: 'Accessories', price: 149.99, stock: 34, sales: 289, image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=300&h=300&fit=crop' },
+  { id: 5, name: 'Smart Coffee Maker', category: 'Home', price: 179.99, stock: 22, sales: 198, image: 'https://images.unsplash.com/photo-1517668808822-9ebb02f2a0e6?w=300&h=300&fit=crop' },
+  { id: 6, name: 'Bluetooth Speaker', category: 'Electronics', price: 79.99, stock: 56, sales: 423, image: 'https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=300&h=300&fit=crop' },
+  { id: 7, name: 'Yoga Mat Premium', category: 'Sports', price: 39.99, stock: 89, sales: 567, image: 'https://images.unsplash.com/photo-1601925260368-ae2f83cf8b7f?w=300&h=300&fit=crop' },
+  { id: 8, name: 'Gaming Mouse RGB', category: 'Electronics', price: 69.99, stock: 43, sales: 378, image: 'https://images.unsplash.com/photo-1527814050087-3793815479db?w=300&h=300&fit=crop' },
+  { id: 9, name: 'Stainless Water Bottle', category: 'Accessories', price: 24.99, stock: 125, sales: 891, image: 'https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=300&h=300&fit=crop' },
+  { id: 10, name: 'Mechanical Keyboard', category: 'Electronics', price: 149.99, stock: 31, sales: 267, image: 'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=300&h=300&fit=crop' },
+  { id: 11, name: 'Portable Charger 20K', category: 'Electronics', price: 49.99, stock: 78, sales: 534, image: 'https://images.unsplash.com/photo-1609091839311-d5365f9ff1c5?w=300&h=300&fit=crop' },
+  { id: 12, name: 'Wireless Earbuds', category: 'Electronics', price: 89.99, stock: 52, sales: 678, image: 'https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=300&h=300&fit=crop' },
+  { id: 13, name: 'Fitness Tracker Band', category: 'Electronics', price: 59.99, stock: 64, sales: 445, image: 'https://images.unsplash.com/photo-1575311373937-040b8e1fd5b6?w=300&h=300&fit=crop' },
+  { id: 14, name: 'Denim Jacket Classic', category: 'Clothing', price: 79.99, stock: 41, sales: 223, image: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=300&h=300&fit=crop' },
+  { id: 15, name: 'Canvas Sneakers', category: 'Footwear', price: 54.99, stock: 73, sales: 512, image: 'https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=300&h=300&fit=crop' },
+];
