@@ -206,7 +206,50 @@ const Dashboard = () => {
         image: ''
     });
     const [formErrors, setFormErrors] = useState({});
+    const [admins, setAdmins] = useState([
+        {
+            email: 'admin@ecommerce.com',
+            password: 'admin123',
+            name: 'Sarah Johnson',
+            profilePic: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop',
+            role: 'Super Admin'
+        },
+        {
+            email: 'manager@ecommerce.com',
+            password: 'manager123',
+            name: 'Michael Chen',
+            profilePic: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop',
+            role: 'Manager'
+        }
+    ]);
     const [newAdmin, setNewAdmin] = useState({ email: '', password: '', name: '', profilePic: '' });
+    const [editProfile, setEditProfile] = useState(false);
+    const [profileEditData, setProfileEditData] = useState({
+        name: '',
+        email: '',
+        profilePic: '',
+        role: ''
+    });
+    const handleProfileUpdate = () => {
+        const updatedUser = {
+            ...currentUser,
+            ...profileEditData
+        };
+        setCurrentUser(updatedUser);
+        setAdmins(admins.map(a => a.email === currentUser.email ? updatedUser : a));
+        setEditProfile(false);
+        alert('Profile updated successfully!');
+    };
+
+    const openProfileEdit = () => {
+        setProfileEditData({
+            name: currentUser.name || '',
+            email: currentUser.email || '',
+            profilePic: currentUser.profilePic || '',
+            role: currentUser.role || ''
+        });
+        setEditProfile(true);
+    };
 
     // Load data from backend on mount
     useEffect(() => {
@@ -313,7 +356,7 @@ const Dashboard = () => {
             rating: parseFloat(formData.rating) || 4.5,
             reviews: parseInt(formData.reviews) || 100,
             sales: editingProduct ? editingProduct.sales : 0,
-            image: formData.image 
+            image: formData.image
         };
 
         if (editingProduct) {
@@ -546,12 +589,11 @@ const Dashboard = () => {
                         </div>
 
                         <div className="flex items-center space-x-4">
-                            <button className="p-2 hover:bg-gray-100 rounded-lg transition relative">
-                                <Bell className="w-5 h-5 text-gray-600" />
-                                <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-                            </button>
+                           
 
-                            <div className="flex items-center space-x-3 px-4 py-2 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg">
+                            <div className="flex items-center space-x-3 px-4 py-2 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg cursor-pointer "                
+                             onClick={openProfileEdit}
+>
                                 <img
                                     src={currentUser?.profilePic}
                                     alt={currentUser?.name}
@@ -964,6 +1006,96 @@ const Dashboard = () => {
                     </div>
                 </div>
             </div>
+
+            {editProfile && (
+                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+                    <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                        <div className="sticky top-0 bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 flex justify-between items-center">
+                            <h2 className="text-2xl font-bold">Edit Profile</h2>
+                            <button onClick={() => setEditProfile(false)} className="text-white hover:bg-white/20 p-2 rounded-lg transition">
+                                <X className="w-6 h-6" />
+                            </button>
+                        </div>
+
+                        <div className="p-6 space-y-4">
+                            <div>
+                                <label className="block text-gray-700 font-semibold mb-2">Full Name</label>
+                                <input
+                                    type="text"
+                                    value={profileEditData.name}
+                                    onChange={(e) => setProfileEditData({ ...profileEditData, name: e.target.value })}
+                                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none"
+                                    placeholder="Your full name"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-gray-700 font-semibold mb-2">Email Address</label>
+                                <input
+                                    type="email"
+                                    value={profileEditData.email}
+                                    onChange={(e) => setProfileEditData({ ...profileEditData, email: e.target.value })}
+                                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none bg-gray-50"
+                                    placeholder="your.email@example.com"
+                                    disabled
+                                />
+                                <p className="text-xs text-gray-500 mt-1">Email cannot be changed</p>
+                            </div>
+
+                            <div>
+                                <label className="block text-gray-700 font-semibold mb-2">Profile Picture URL</label>
+                                <input
+                                    type="url"
+                                    value={profileEditData.profilePic}
+                                    onChange={(e) => setProfileEditData({ ...profileEditData, profilePic: e.target.value })}
+                                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none"
+                                    placeholder="https://example.com/photo.jpg"
+                                />
+                                {profileEditData.profilePic && (
+                                    <div className="mt-3">
+                                        <img
+                                            src={profileEditData.profilePic}
+                                            alt="Preview"
+                                            className="w-24 h-24 rounded-full object-cover border-4 border-gray-200"
+                                            onError={(e) => e.target.style.display = 'none'}
+                                        />
+                                    </div>
+                                )}
+                            </div>
+
+                         
+
+                          
+
+                            <div>
+                                <label className="block text-gray-700 font-semibold mb-2">Role</label>
+                                <input
+                                    type="text"
+                                    value={profileEditData.role}
+                                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg bg-gray-50"
+                                    disabled
+                                />
+                                <p className="text-xs text-gray-500 mt-1">Role is assigned by system administrators</p>
+                            </div>
+
+                            <div className="flex space-x-3 pt-4">
+                                <button
+                                    onClick={() => setEditProfile(false)}
+                                    className="flex-1 px-6 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleProfileUpdate}
+                                    className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition"
+                                >
+                                    Save Changes
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Add/Edit Product Modal */}
             {showModal && (
