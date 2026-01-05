@@ -1,20 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, Area, AreaChart } from 'recharts';
-import {
-    Package, ShoppingCart, DollarSign, TrendingUp, Plus, Edit, Trash2, LogOut, Upload, X, Eye, EyeOff, Users, Search, Brain,
-    Bell,
-    Database,
-    AlertTriangle,
-    Award,
-    Sparkles,
-    Activity,
-    Target
-} from 'lucide-react';
-import './App.css';
-import { initialProducts } from './Utils/InitialProducts'
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, Area, AreaChart } from 'recharts';
+import { Package, ShoppingCart, DollarSign, TrendingUp, Plus, Edit, Trash2, LogOut, X, Eye, EyeOff, Users, Search, Brain, Bell, AlertTriangle, Award, Sparkles, Activity, Target } from 'lucide-react';
 
+import './App.css';
+import { initialProducts } from './Utils/InitialProducts';
 
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
+
 
 // Backend simulation using localStorage
 const Backend = {
@@ -68,6 +60,7 @@ const Backend = {
         localStorage.removeItem('ecommerce_current_user');
     }
 };
+
 
 // Advanced ML-Based Analytics Engine
 const MLAnalytics = {
@@ -209,7 +202,8 @@ const Dashboard = () => {
         price: '',
         stock: '',
         rating: '',
-        reviews: ''
+        reviews: '',
+        image: ''
     });
     const [formErrors, setFormErrors] = useState({});
     const [newAdmin, setNewAdmin] = useState({ email: '', password: '', name: '', profilePic: '' });
@@ -318,7 +312,8 @@ const Dashboard = () => {
             stock: parseInt(formData.stock),
             rating: parseFloat(formData.rating) || 4.5,
             reviews: parseInt(formData.reviews) || 100,
-            sales: editingProduct ? editingProduct.sales : 0
+            sales: editingProduct ? editingProduct.sales : 0,
+            image: formData.image 
         };
 
         if (editingProduct) {
@@ -383,7 +378,6 @@ const Dashboard = () => {
         alert('Admin added successfully!');
     };
 
-    // ML Analytics Calculations
     const mlClusters = MLAnalytics.kMeansClustering(products);
     const salesForecast = MLAnalytics.forecastSales(products);
     const priceElasticity = MLAnalytics.priceElasticity(products);
@@ -604,7 +598,7 @@ const Dashboard = () => {
                         <div>
                             <h2 className="text-2xl font-bold mb-2">Welcome back, {currentUser?.name}! 👋</h2>
                             <p className="text-blue-100">Here's what's happening with your store today</p>
-                           
+
                         </div>
                         <div className="hidden md:block">
                             <div className="bg-white/20 backdrop-blur-sm rounded-lg p-4">
@@ -1096,6 +1090,16 @@ const Dashboard = () => {
                                             placeholder="100"
                                         />
                                     </div>
+                                    <div>
+                                        <label className="block text-gray-700 font-semibold mb-2">Image</label>
+                                        <input
+                                            type="url"
+                                            value={formData.image}
+                                            onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                                            className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none"
+                                            placeholder="https://example.com/photo.jpg"
+                                        />
+                                    </div>
                                 </div>
                             )}
 
@@ -1197,6 +1201,7 @@ const Dashboard = () => {
             )}
         </div>
     );
+
 };
 
 export default Dashboard;
