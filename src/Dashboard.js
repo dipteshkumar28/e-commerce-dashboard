@@ -520,14 +520,6 @@ const Dashboard = () => {
                                     {isSignup ? 'Create Account' : 'Sign In'}
                                 </button>
 
-                                {!isSignup && (
-                                    <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-                                        <p className="text-sm text-gray-700 font-semibold mb-2">Demo Credentials:</p>
-                                        <p className="text-sm text-gray-600">Email: <span className="font-mono">admin@ecommerce.com</span></p>
-                                        <p className="text-sm text-gray-600">Password: <span className="font-mono">admin123</span></p>
-                                        <p className="text-xs text-gray-500 mt-2">Or: manager@ecommerce.com / manager123</p>
-                                    </div>
-                                )}
                             </form>
                         </div>
                     </div>
