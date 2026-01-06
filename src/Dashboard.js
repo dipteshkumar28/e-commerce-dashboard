@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, Area, AreaChart } from 'recharts';
-import { Package, ShoppingCart, DollarSign, TrendingUp, Plus, Edit, Trash2, LogOut, X, Eye, EyeOff, Users, Search, Brain, Bell, AlertTriangle, Award, Sparkles, Activity, Target } from 'lucide-react';
+import { Package, ShoppingCart, DollarSign, TrendingUp, Plus, Edit, Trash2, LogOut, X, Eye, EyeOff, Users, Search, Brain, AlertTriangle, Award, Sparkles, Zap, Activity, Target } from 'lucide-react';
 
 import './App.css';
 import { initialProducts } from './Utils/InitialProducts';
@@ -190,6 +190,10 @@ const Dashboard = () => {
     const [products, setProducts] = useState([]);
     const [users, setUsers] = useState([]);
     const [showModal, setShowModal] = useState(false);
+    const [showAIAssistant, setShowAIAssistant] = useState(true);
+    const [aiQuery, setAiQuery] = useState('');
+    const [aiResponse, setAiResponse] = useState('');
+    const [aiLoading, setAiLoading] = useState(false);
     const [showAdminModal, setShowAdminModal] = useState(false);
     const [showAnalytics, setShowAnalytics] = useState(true);
     const [currentStep, setCurrentStep] = useState(1);
@@ -251,6 +255,51 @@ const Dashboard = () => {
         setEditProfile(true);
     };
 
+    const calculateProductScore = (product) => {
+        const maxSales = Math.max(...products.map(p => p.sales));
+        const maxRevenue = Math.max(...products.map(p => p.price * p.sales));
+        const salesScore = (product.sales / maxSales) * 40;
+        const revenueScore = ((product.price * product.sales) / maxRevenue) * 60;
+        return (salesScore + revenueScore).toFixed(1);
+    };
+
+    const predictStockDepletion = (product) => {
+        if (product.sales === 0) return '∞';
+        const avgDailySales = product.sales / 30;
+        return Math.floor(product.stock / avgDailySales);
+    };
+
+    const handleAIQuery = async () => {
+        setAiLoading(true);
+        await new Promise(resolve => setTimeout(resolve, 1500));
+
+        const query = aiQuery.toLowerCase();
+        const totalRevenue = products.reduce((sum, p) => sum + (p.price * p.sales), 0);
+        const totalSales = products.reduce((sum, p) => sum + p.sales, 0);
+
+        let response = '';
+        if (query.includes('revenue')) {
+            response = `📊 Revenue Analysis:\n\nTotal Revenue: $${totalRevenue.toFixed(2)}\nTotal Sales: ${totalSales} units\nAverage Order: $${(totalRevenue / totalSales).toFixed(2)}\n\n🎯 Top Product: ${products.sort((a, b) => (b.price * b.sales) - (a.price * a.sales))[0].name}`;
+        } else if (query.includes('stock')) {
+            const lowStock = products.filter(p => p.stock < 30).length;
+            response = `📦 Inventory Status:\n\nLow Stock: ${lowStock} products\nTotal Stock: ${products.reduce((sum, p) => sum + p.stock, 0)} units\n\n⚠️ Reorder: Products below 30 units`;
+        } else {
+            response = `🤖 AI Assistant Ready!\n\nAsk me about:\n• Revenue & Sales\n• Inventory Status\n• Product Performance\n• Business Predictions`;
+        }
+
+        setAiResponse(response);
+        setAiLoading(false);
+    };
+    const exportData = (format) => {
+        const dataStr = format === 'json' ? JSON.stringify(products, null, 2) :
+            ['ID,Name,Category,Price,Stock,Sales', ...products.map(p => `${p.id},${p.name},${p.category},${p.price},${p.stock},${p.sales}`)].join('\n');
+        const blob = new Blob([dataStr], { type: format === 'json' ? 'application/json' : 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `products.${format === 'json' ? 'json' : 'csv'}`;
+        link.click();
+    };
     // Load data from backend on mount
     useEffect(() => {
         const savedUser = Backend.getCurrentUser();
@@ -589,11 +638,20 @@ const Dashboard = () => {
                         </div>
 
                         <div className="flex items-center space-x-4">
-                           
+                            <button onClick={() => setShowAIAssistant(true)} className="hidden md:flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:from-indigo-700 hover:to-purple-700 transition">
+                                <Zap className="w-4 h-4" />
+                                <span>AI Assistant</span>
+                            </button>
 
-                            <div className="flex items-center space-x-3 px-4 py-2 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg cursor-pointer "                
-                             onClick={openProfileEdit}
->
+                            <button onClick={() => exportData('csv')} className="hidden md:flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                                <span>Export</span>
+                            </button>
+
+
+                            <div className="flex items-center space-x-3 px-4 py-2 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg cursor-pointer "
+                                onClick={openProfileEdit}
+                            >
                                 <img
                                     src={currentUser?.profilePic}
                                     alt={currentUser?.name}
@@ -1063,9 +1121,9 @@ const Dashboard = () => {
                                 )}
                             </div>
 
-                         
 
-                          
+
+
 
                             <div>
                                 <label className="block text-gray-700 font-semibold mb-2">Role</label>
@@ -1096,6 +1154,8 @@ const Dashboard = () => {
                     </div>
                 </div>
             )}
+
+
 
             {/* Add/Edit Product Modal */}
             {showModal && (
@@ -1255,7 +1315,8 @@ const Dashboard = () => {
                         </div>
                     </div>
                 </div>
-            )}
+            )
+            }
 
             {/* Add Admin Modal */}
             {showAdminModal && (
@@ -1322,8 +1383,75 @@ const Dashboard = () => {
                         </div>
                     </div>
                 </div>
+            )
+            }
+            {showAIAssistant && (
+                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+                    <div className="bg-white rounded-2xl max-w-3xl w-full max-h-[80vh] overflow-hidden">
+                        <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-6 flex justify-between items-center">
+                            <div className="flex items-center space-x-3">
+                                <div className="bg-white/20 p-2 rounded-lg">
+                                    <Zap className="w-6 h-6" />
+                                </div>
+                                <div>
+                                    <h2 className="text-2xl font-bold">AI Business Assistant</h2>
+                                    <p className="text-sm text-indigo-100">Powered by Advanced Analytics</p>
+                                </div>
+                            </div>
+                            <button onClick={() => { setShowAIAssistant(false); setAiQuery(''); setAiResponse(''); }} className="text-white hover:bg-white/20 p-2 rounded-lg transition">
+                                <X className="w-6 h-6" />
+                            </button>
+                        </div>
+
+                        <div className="p-6 space-y-4 max-h-[60vh] overflow-y-auto">
+                            <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-4 border-2 border-blue-100">
+                                <h3 className="font-bold text-gray-800 mb-2">💡 Ask me anything:</h3>
+                                <ul className="text-sm text-gray-600 space-y-1">
+                                    <li>• "What's my total revenue?"</li>
+                                    <li>• "Analyze my stock levels"</li>
+                                    <li>• "Show me product performance"</li>
+                                </ul>
+                            </div>
+
+                            {aiResponse && (
+                                <div className="bg-white border-2 border-gray-200 rounded-xl p-5">
+                                    <div className="flex items-start space-x-3">
+                                        <div className="bg-gradient-to-r from-indigo-500 to-purple-500 p-2 rounded-lg">
+                                            <Zap className="w-5 h-5 text-white" />
+                                        </div>
+                                        <div className="flex-1">
+                                            <p className="text-sm font-semibold text-gray-800 mb-2">AI Response:</p>
+                                            <p className="text-sm text-gray-700 whitespace-pre-line">{aiResponse}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            <div className="space-y-3">
+                                <textarea value={aiQuery} onChange={(e) => setAiQuery(e.target.value)} placeholder="Type your question..." className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none" rows="3" />
+                                <button onClick={handleAIQuery} disabled={aiLoading || !aiQuery.trim()} className="w-full flex items-center justify-center space-x-2 px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:from-indigo-700 hover:to-purple-700 transition disabled:opacity-50">
+                                    {aiLoading ? (
+                                        <>
+                                            <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                            <span>Analyzing...</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Zap className="w-5 h-5" />
+                                            <span>Get AI Insights</span>
+                                        </>
+                                    )}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             )}
-        </div>
+
+        </div >
     );
 
 };
